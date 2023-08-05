@@ -1,11 +1,10 @@
 #include <iostream>
-#include <ctime>
-#include <cstdlib>
-#include <fstream>
-#include <vector>
 #include <string>
-#include <algorithm>
-
+#include <ctime> //Used for random
+#include <cstdlib> //Used for random
+#include <fstream>
+#include <vector> //Vector used for the updateRecord and canPlaceShips functions
+#include <algorithm> //Used for transform in main function to make username lowercase
 
 using namespace std;
 
@@ -100,50 +99,45 @@ bool isValidMove(int x, int y)
     return (x >= 0 && x < GRID_SIZE && y >= 0 && y < GRID_SIZE);
 }
 
-//Check if the cell is within the grid boundaries and contains '-'
-bool isCellEmpty(char grid[GRID_SIZE][GRID_SIZE], int x, int y)
-{
-    return (x >= 0 && x < GRID_SIZE && y >= 0 && y < GRID_SIZE && grid[x][y] == '-');
-}
-
 //Helper function for placeShips()
 bool canPlaceShip(char grid[GRID_SIZE][GRID_SIZE], int x, int y, int length, bool horizontal)
 {
-    //#9 Control
+    vector<pair<int, int>> positions; // Vector to store ship positions and adjacent cells
+
     if (horizontal)
     {
-        //#9 Control, #7 iteration, #4 variables, #5 arrays
         for (int i = 0; i < length; i++)
         {
-            //Check if any adjacent cell contains 'S'
-            if (!isCellEmpty(grid, x, y + i) || !isCellEmpty(grid, x + 1, y + i) || !isCellEmpty(grid, x - 1, y + i) ||
-                !isCellEmpty(grid, x, y + i + 1) || !isCellEmpty(grid, x, y + i - 1))
-            {
-                return false;
-            }
+            positions.emplace_back(x, y + i);
+            positions.emplace_back(x + 1, y + i);
+            positions.emplace_back(x - 1, y + i);
+            positions.emplace_back(x, y + i + 1);
+            positions.emplace_back(x, y + i - 1);
         }
     }
     else
     {
-        //#9 Control, #7 iteration, #4 variables, #5 arrays
         for (int i = 0; i < length; i++)
         {
-            //Check if any adjacent cell contains 'S'
-            if (!isCellEmpty(grid, x + i, y) || !isCellEmpty(grid, x + i, y + 1) || !isCellEmpty(grid, x + i, y - 1) ||
-                !isCellEmpty(grid, x + i + 1, y) || !isCellEmpty(grid, x + i - 1, y))
-            {
-                return false;
-            }
+            positions.emplace_back(x + i, y);
+            positions.emplace_back(x + i, y + 1);
+            positions.emplace_back(x + i, y - 1);
+            positions.emplace_back(x + i + 1, y);
+            positions.emplace_back(x + i - 1, y);
         }
     }
 
-    return true;
+    return all_of(positions.begin(), positions.end(), [&](const pair<int, int>& pos) {
+        int px = pos.first;
+        int py = pos.second;
+        return isValidMove(px, py) && grid[px][py] == '-';
+    });
 }
 
 //Places ships on the grids so they don't touch or overlap. 5 ships of lengths 5,4,3,3, and 2.
 void placeShips()
 {
-    srand(time(NULL));
+    srand(time(nullptr));
 
     //#4 Variables
     int playerShipsPlaced = 0;
@@ -521,7 +515,7 @@ int main()
         if (isGameOver())
         {
             cout << "\nOh no! The CPU sunk all your ships!\n";
-            Record updatedRecord = updateRecord(username, true);
+            Record updatedRecord = updateRecord(username, false);
             cout << "Better luck next time " << updatedRecord.username << "! You've won " << updatedRecord.wins << " times and lost " << updatedRecord.losses << " times!" << endl;
             cout << "Thank you for playing! Goodbye!" << endl;
             break;
