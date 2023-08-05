@@ -104,8 +104,10 @@ bool canPlaceShip(char grid[GRID_SIZE][GRID_SIZE], int x, int y, int length, boo
 {
     vector<pair<int, int>> positions; // Vector to store ship positions and adjacent cells
 
+    //#9 control
     if (horizontal)
     {
+        //#7 Iteration
         for (int i = 0; i < length; i++)
         {
             positions.emplace_back(x, y + i);
@@ -117,6 +119,7 @@ bool canPlaceShip(char grid[GRID_SIZE][GRID_SIZE], int x, int y, int length, boo
     }
     else
     {
+        //#7 Iteration
         for (int i = 0; i < length; i++)
         {
             positions.emplace_back(x + i, y);
@@ -127,7 +130,9 @@ bool canPlaceShip(char grid[GRID_SIZE][GRID_SIZE], int x, int y, int length, boo
         }
     }
 
+    //#9 Control, #5 Arrays
     return all_of(positions.begin(), positions.end(), [&](const pair<int, int>& pos) {
+        //4 Variables
         int px = pos.first;
         int py = pos.second;
         return isValidMove(px, py) && grid[px][py] == '-';
@@ -143,7 +148,7 @@ void placeShips()
     int playerShipsPlaced = 0;
     int cpuShipsPlaced = 0;
 
-    //##7 iteration
+    //#7 iteration
     while (playerShipsPlaced < NUM_SHIPS)
     {
         //#9 Control, #4 variables
